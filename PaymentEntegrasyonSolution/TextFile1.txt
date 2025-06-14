@@ -1,0 +1,25 @@
+﻿AuctionPlatform.sln
+│
+├── Core.Domain                    --> Sadece iş nesneleri ve interface'ler
+│   ├── Entities
+│   ├── Enums
+│   └── Interfaces
+
+├── Core.Application               --> Business kuralları, use-case'ler
+│   ├── Interfaces
+│   ├── DTOs
+│   └── Services
+
+├── Infrastructure.Firebase        --> Firebase (Auth, Firestore, Messaging) servisleri
+│   ├── Firestore
+│   ├── FirebaseAuth
+│   └── Messaging
+
+├── Infrastructure.Iyzico         --> İyzico SDK/HTTP wrapper'ı, ödeme işlemleri
+│   └── Services
+
+├── WebAPI                         --> ASP.NET Core Web API
+│   ├── Controllers
+│   ├── Middlewares
+│   ├── Webhooks
+│   └── Startup / Program.cs
