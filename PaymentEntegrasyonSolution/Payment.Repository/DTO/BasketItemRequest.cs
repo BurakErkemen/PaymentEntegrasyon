@@ -4,7 +4,6 @@ public record BasketItemRequest(
 string Name, // = "Binocular";
 string Category1, // = "Collectibles";
 string Category2, // = "Accessories";
-string ItemTyp, //e = BasketItemType.PHYSICAL.ToString();
-string Price // = "0.3";
+decimal Price // = "0.3";
     );
  

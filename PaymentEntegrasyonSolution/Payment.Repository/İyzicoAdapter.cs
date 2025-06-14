@@ -1,9 +1,11 @@
 ﻿using Iyzipay;
 using Iyzipay.Model;
 using Iyzipay.Request;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Payment.Repository.DTO;
 using System.Globalization;
-using Microsoft.Extensions.Configuration;
+using System.Net.Http;
 
 namespace Payment.Repository
 {
@@ -45,27 +47,46 @@ namespace Payment.Repository
                 },
                 Buyer = new Buyer
                 {
-                    Id = "BY789",
-                    Name = "Test",
-                    Surname = "User",
-                    Email = "test@example.com"
+                    Id = request.BuyerRequest.BuyerId,
+                    Name = request.BuyerRequest.Name,
+                    Surname = request.BuyerRequest.Surname,
+                    GsmNumber = request.BuyerRequest.GsmNumber,
+                    Email = request.BuyerRequest.Email,
+                    IdentityNumber = request.BuyerRequest.IdentityNumber,
+                    LastLoginDate = request.BuyerRequest.LastLoginDate.ToDateTime().ToString("yyyy-MM-dd HH:mm:ss"),
+                    RegistrationDate = request.BuyerRequest.RegistrationDate.ToDateTime().ToString("yyyy-MM-dd HH:mm:ss"),
+                    RegistrationAddress = request.BuyerRequest.RegistrationAddress,
+                    Ip = request.BuyerRequest.Ip,
+                    City = request.BuyerRequest.City,
+                    Country = request.BuyerRequest.Country,
+                    ZipCode = request.BuyerRequest.ZipCode
                 },
                 BillingAddress = new Address
                 {
-                    ContactName = "Test User",
-                    City = "Istanbul",
-                    Country = "Turkey",
-                    Description = "Address"
+                    ContactName = request.BillingAddressRequest.ContactName,
+                    City = request.BillingAddressRequest.City,
+                    Country = request.BillingAddressRequest.Country,
+                    Description = request.BillingAddressRequest.Description,
+                    ZipCode = request.BillingAddressRequest.ZipCode
+                },
+                ShippingAddress = new Address
+                {
+                    ContactName = request.ShippingAddressRequest.ContactName,
+                    City = request.ShippingAddressRequest.City,
+                    Country = request.ShippingAddressRequest.Country,
+                    Description = request.ShippingAddressRequest.Description,
+                    ZipCode = request.ShippingAddressRequest.ZipCode
                 },
                 BasketItems = new List<BasketItem>
                 {
                     new BasketItem
                     {
-                        Id = "BI101",
-                        Name = "Item",
-                        Category1 = "Category",
+                        Id = request.BasketItemRequest.Id,
+                        Name = request.BasketItemRequest.Name,
+                        Category1 = request.BasketItemRequest.Category1,
+                        Category2 = request.BasketItemRequest.Category2,
                         ItemType = BasketItemType.VIRTUAL.ToString(),
-                        Price = request.Price.ToString("F2", CultureInfo.InvariantCulture)
+                        Price = request.BasketItemRequest.Price.ToString("F2", CultureInfo.InvariantCulture)
                     }
                 }
             };
