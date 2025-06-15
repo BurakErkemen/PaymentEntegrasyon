@@ -6,28 +6,35 @@ namespace Payment.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class PaymentsController : ControllerBase
+    public class PayController : ControllerBase
     {
-        private readonly IPaymentService _paymentService;
+        private readonly IPaymentServices _paymentService;
+        private readonly ILogger<PayController> _logger;
 
-        public PaymentsController(IPaymentService paymentService)
+        public PayController(IPaymentServices paymentService, ILogger<PayController> logger)
         {
             _paymentService = paymentService;
+            _logger = logger;
         }
 
         [HttpPost]
         public async Task<IActionResult> Pay([FromBody] PaymentRequest request)
         {
+            string ip = HttpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault()
+            ?? HttpContext.Connection.RemoteIpAddress?.ToString()
+            ?? "IP_BULUNAMADI";
+
             var userId = HttpContext.Items["UserId"]?.ToString();
             if (string.IsNullOrEmpty(userId))
             {
                 return Unauthorized("Firebase kullanıcı doğrulaması başarısız.");
             }
 
-            var response = await _paymentService.ProcessPaymentAsync(userId, request);
+            var response = await _paymentService.ProcessPaymentAsync(userId, request,ip);
 
             if (response.Code)
                 return Ok(response);
+            _logger.LogInformation("Kullanıcı ödeme yapıyor. IP: {ip}, UID: {userId}", ip, userId);
 
             return BadRequest(response);
         }

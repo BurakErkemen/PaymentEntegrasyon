@@ -15,7 +15,7 @@ namespace Payment.Repository.Model
         public string BuyerName { get; set; } = default!;
 
         [FirestoreProperty("Price")]
-        public string Price { get; set; } = default!;
+        public double Price { get; set; }
 
         [FirestoreProperty("CreatedAt")]
         public Timestamp CreatedAt { get; set; }

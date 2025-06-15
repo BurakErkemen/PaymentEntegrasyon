@@ -1,16 +1,17 @@
 ﻿using Google.Cloud.Firestore;
 using Payment.Repository.DTO;
 using Payment.Repository.Model;
+using System.Globalization;
 
 namespace Payment.Repository.Repository
 {
     public class FirestoreRepository : IFirestoreRepository
     {
-        private readonly FirestoreDb _firestoreDb;
+        private readonly IFirestoreClient _client;
 
-        public FirestoreRepository(FirestoreDb firestoreDb)
+        public FirestoreRepository(IFirestoreClient client)
         {
-            _firestoreDb = firestoreDb;
+            _client = client;
         }
 
         public async Task SavePaymentAsync(string userId, PaymentRequest request, string paymentId)
@@ -20,16 +21,11 @@ namespace Payment.Repository.Repository
                 UserId = userId,
                 PaymentId = paymentId,
                 BuyerName = request.BuyerRequest.Name,
-                Price = request.Price.ToString(),
-                CreatedAt = Timestamp.GetCurrentTimestamp()
+                Price = Convert.ToDouble(request.Price),
+                CreatedAt = Timestamp.FromDateTime(DateTime.UtcNow)
             };
 
-            await _firestoreDb
-                .Collection("users")
-                .Document(userId)
-                .Collection("payments")
-                .AddAsync(payment);
+            await _client.AddPaymentAsync(userId, payment);
         }
     }
-
 }

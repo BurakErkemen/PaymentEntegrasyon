@@ -1,15 +1,14 @@
 ﻿using Iyzipay;
 using Iyzipay.Model;
 using Iyzipay.Request;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Payment.Repository.DTO;
+using Payment.Repository.Services;
 using System.Globalization;
-using System.Net.Http;
 
 namespace Payment.Repository
 {
-    public class IyzicoAdapter
+    public class IyzicoAdapter : IPaymentGateway
     {
         private readonly IConfiguration _configuration;
 
@@ -18,13 +17,14 @@ namespace Payment.Repository
             _configuration = configuration;
         }
 
-        public async Task<PaymentResponse> MakePaymentAsync(PaymentRequest request)
+        public async Task<PaymentResponse> MakePaymentAsync(PaymentRequest request, string IPadress)
         {
+           
             var options = new Options
-            {
-                ApiKey = _configuration["izyicoSDK:ApiKey"],
-                SecretKey = _configuration["izyicoSDK:SecretKey"],
-                BaseUrl = _configuration["izyicoSDK:BaseUrl"]
+            {   
+                ApiKey = "sandbox-QrGAh6curdDf6UCmhb3NqP5DcufdSAtT",
+                SecretKey = "sandbox-XGaz1RTemA89p9VCxoFfPvYCneKkWrr7",
+                BaseUrl = "https://sandbox-api.iyzipay.com"
             };
 
             var paymentRequest = new CreatePaymentRequest
@@ -53,10 +53,12 @@ namespace Payment.Repository
                     GsmNumber = request.BuyerRequest.GsmNumber,
                     Email = request.BuyerRequest.Email,
                     IdentityNumber = request.BuyerRequest.IdentityNumber,
-                    LastLoginDate = request.BuyerRequest.LastLoginDate.ToDateTime().ToString("yyyy-MM-dd HH:mm:ss"),
-                    RegistrationDate = request.BuyerRequest.RegistrationDate.ToDateTime().ToString("yyyy-MM-dd HH:mm:ss"),
+                    LastLoginDate = DateTime.Parse(request.BuyerRequest.LastLoginDate, CultureInfo.InvariantCulture)
+                    .ToString("yyyy-MM-dd HH:mm:ss"),
+                    RegistrationDate = DateTime.Parse(request.BuyerRequest.RegistrationDate, CultureInfo.InvariantCulture)
+                    .ToString("yyyy-MM-dd HH:mm:ss"),
                     RegistrationAddress = request.BuyerRequest.RegistrationAddress,
-                    Ip = request.BuyerRequest.Ip,
+                    Ip = IPadress,
                     City = request.BuyerRequest.City,
                     Country = request.BuyerRequest.Country,
                     ZipCode = request.BuyerRequest.ZipCode

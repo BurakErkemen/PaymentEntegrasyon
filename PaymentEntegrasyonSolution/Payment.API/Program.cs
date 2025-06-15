@@ -14,31 +14,28 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IPaymentServices, PaymentService>();
+builder.Services.AddScoped<IFirestoreClient, FirestoreClient>();
 builder.Services.AddScoped<IFirestoreRepository, FirestoreRepository>();
-builder.Services.AddScoped<IyzicoAdapter>();
+builder.Services.AddScoped<IPaymentGateway, IyzicoAdapter>();
 
 
 
-var credentialPath = Path.Combine(Directory.GetCurrentDirectory(), "MyApp.Infrastructure", "Secrets", "firebase-key.json");
+var credentialPath = Path.Combine(Directory.GetCurrentDirectory(), "firebase-key.json");
 Environment.SetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS", credentialPath);
 
 builder.Services.AddSingleton(provider =>
 {
-    var firestoreDb = FirestoreDb.Create("project_id");
+    var firestoreDb = FirestoreDb.Create("paymentapi-944a7");
     return firestoreDb;
 });
 
-// Ýyzipay Configuration
-Options options = new Options
-{
-    ApiKey = "ApiKey",
-    SecretKey = "SecretKey",
-    BaseUrl = "BaseUrl"
-};
-
 
 var app = builder.Build();
-
+app.Use(async (context, next) =>
+{
+    context.Items["UserId"] = "1"; // test deðeri
+    await next();
+});
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {

@@ -4,6 +4,6 @@ namespace Payment.Repository.Services
 {
     public interface IPaymentServices
     {
-        Task<PaymentResponse> ProcessPaymentAsync(string userId, PaymentRequest request);
+        Task<PaymentResponse> ProcessPaymentAsync(string userId, PaymentRequest request, string IPadress);
     }
 }

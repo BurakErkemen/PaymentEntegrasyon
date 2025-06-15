@@ -1,28 +1,26 @@
 ﻿using Payment.Repository.DTO;
 using Payment.Repository.Repository;
+using Payment.Repository.Services;
 
-namespace Payment.Repository.Services
+public class PaymentService : IPaymentServices
 {
-    public class PaymentService :IPaymentServices
+    private readonly IPaymentGateway _paymentGateway;
+    private readonly IFirestoreRepository _firestore;
+
+    public PaymentService(IPaymentGateway paymentGateway, IFirestoreRepository firestore)
     {
-        private readonly IyzicoAdapter _iyzico;
-        private readonly IFirestoreRepository _firestore;
+        _paymentGateway = paymentGateway;
+        _firestore = firestore;
+    }
 
-        public PaymentService(IyzicoAdapter iyzico, IFirestoreRepository firestore)
+    public async Task<PaymentResponse> ProcessPaymentAsync(string userId, PaymentRequest request, string IPadress)
+    {
+        var result = await _paymentGateway.MakePaymentAsync(request, IPadress);
+        if (result.Code)
         {
-            _iyzico = iyzico;
-            _firestore = firestore;
+            await _firestore.SavePaymentAsync(userId, request, result.PaymentId);
         }
 
-        public async Task<PaymentResponse> ProcessPaymentAsync(string userId, PaymentRequest request)
-        {
-            var result = await _iyzico.MakePaymentAsync(request);
-            if (result.Code == true)
-            {
-                await _firestore.SavePaymentAsync(userId, request, result.PaymentId);
-            }
-
-            return result;
-        }
+        return result;
     }
 }
